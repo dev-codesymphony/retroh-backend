@@ -160,8 +160,9 @@ const twitterFollowed = asyncHandler(async (req, res) => {
           }
         }
       } catch (error) {
-        res.status(400);
-        throw new Error(error);
+        return res.json({ error: error });
+        // res.status(400);
+        // throw new Error(error);
       }
     } while (shouldRun);
   } else {
@@ -217,8 +218,9 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
           }
         }
       } catch (error) {
-        res.status(400);
-        throw new Error(error);
+        return res({});
+        // res.status(400);
+        // throw new Error(error);
       }
     } while (shouldRun);
   } else {
@@ -279,8 +281,9 @@ const twitterTweetedHandle = asyncHandler(async (req, res) => {
           }
         }
       } catch (error) {
-        res.status(400);
-        throw new Error(error);
+        return res({});
+        // res.status(400);
+        // throw new Error(error);
       }
     } while (shouldRun);
   } else {
