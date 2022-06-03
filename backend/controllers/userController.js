@@ -133,10 +133,12 @@ const twitterFollowed = asyncHandler(async (req, res) => {
       try {
         shouldRun = false;
         const data = await getUserFollowingData(user, pagination_token);
+        const id =
+          req.body.twitterFollowed === "official"
+            ? variables.ACCOUNT_OFFICIAL
+            : variables.ACCOUNT_FOUNDER;
         // eslint-disable-next-line
-        const isFollowing = data.data.some(
-          (user) => user.id == req.body.twitterFollowed
-        );
+        const isFollowing = data.data.some((user) => user.id == id);
         if (isFollowing) {
           user.twitterFollowed = [
             ...user.twitterFollowed,
@@ -172,7 +174,7 @@ const twitterFollowed = asyncHandler(async (req, res) => {
 const twitterRetweeted = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (user) {
-    if (user.twitterRetweeted.includes(req.body.twitterRetweeted)) {
+    if (user.twitterRetweeted.length > 0) {
       res.status(400);
       throw new Error("User already retweeted this specific tweet");
     }
@@ -187,7 +189,7 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
         const filteredData = data.data.filter((data) => {
           return data.referenced_tweets
             ? data.referenced_tweets.some(
-                (tweet) => tweet.id === req.body.twitterRetweeted
+                (tweet) => tweet.id === variables.TWEET
               )
             : false;
         });
@@ -196,10 +198,7 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
 
         const hasRetweetedTweet = filteredData.length > 0;
         if (hasRetweetedTweet) {
-          user.twitterRetweeted = [
-            ...user.twitterRetweeted,
-            req.body.twitterRetweeted,
-          ];
+          user.twitterRetweeted = [...user.twitterRetweeted, variables.TWEET];
           user.arcadePoint += 1;
 
           const updatedUser = await user.save();
@@ -232,7 +231,7 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
 const twitterTweetedHandle = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (user) {
-    if (user.twitterTweetedHandle.includes(req.body.tweetedHandle)) {
+    if (user.twitterTweetedHandle.length > 0) {
       res.status(400);
       throw new Error("User already tweeted this specific handle");
     }
@@ -252,7 +251,7 @@ const twitterTweetedHandle = asyncHandler(async (req, res) => {
             : !data.entities.mentions
             ? false
             : data.entities.mentions.some(
-                (mention) => mention.username === req.body.tweetedHandle
+                (mention) => mention.username === variables.HANDLE
               );
         });
 
@@ -260,7 +259,7 @@ const twitterTweetedHandle = asyncHandler(async (req, res) => {
         if (hasRetweetedHandle) {
           user.twitterTweetedHandle = [
             ...user.twitterTweetedHandle,
-            req.body.tweetedHandle,
+            variables.HANDLE,
           ];
           user.arcadePoint += 1;
 

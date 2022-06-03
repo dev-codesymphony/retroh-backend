@@ -1,4 +1,5 @@
 import { variables } from "../log.js";
+import axios from "axios";
 export const getUserFollowingData = async (user, pagination_token = null) => {
   let url = `https://corsanywhere.herokuapp.com/https://api.twitter.com/2/users/${user}/following`;
   if (pagination_token) {

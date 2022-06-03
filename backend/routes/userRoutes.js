@@ -13,7 +13,7 @@ import {
 import { protect } from "../middleware/authMiddleware.js";
 
 router.route("/").get(find).post(create).patch(protect, patch);
-router.route("/verifyDiscord").patch(protect, verifyDiscord);
+router.route("/verifyDiscord").post(protect, verifyDiscord);
 router.route("/twitterFollowed").post(protect, twitterFollowed);
 router.route("/twitterTweetedHandle").post(protect, twitterTweetedHandle);
 router.route("/twitterRetweeted").post(protect, twitterRetweeted);
