@@ -72,7 +72,6 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
     })
       .then((res) => res.json())
       .then((response) => {
-        console.log(response);
         // Step 2: Check if our server is in the user's server
         const guilds = response.map((guild) => guild.id);
 
@@ -101,22 +100,18 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
                 const updatedUser = await user.save();
                 resp.status(201).resp.json(updatedUser);
               } else {
-                resp.status(401).json({
-                  errorMsg: "You don't have the role",
-                });
+                resp.status(400);
+                throw Error("Dont have role");
               }
             });
         } else {
-          // return 401 if the user is not in the server
-          resp.status(401).json({
-            errorMsg: "You Are Not In the Server",
-          });
+          resp.status(400);
+          throw Error("Not In Server");
         }
       })
       .catch((error) => {
-        resp.status(400).json({
-          errorMsg: error.message,
-        });
+        resp.status(400);
+        throw Error(error.message);
       });
   } else {
     resp.status(404);
@@ -126,12 +121,12 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
 // @desc    twitter followed
 // @route   patch /api/users/twitterFollowed
 // @access  Private
-const twitterFollowed = asyncHandler(async (req, res) => {
+const twitterFollowed = asyncHandler(async (req, resp) => {
   const user = await User.findById(req.user._id);
   if (user) {
     if (user.twitterFollowed.includes(req.body.twitterFollowed)) {
-      res.status(400);
-      throw new Error("User already followed");
+      resp.status(400);
+      throw Error("User already followed");
     }
 
     let pagination_token = null;
@@ -139,7 +134,10 @@ const twitterFollowed = asyncHandler(async (req, res) => {
     do {
       try {
         shouldRun = false;
-        const data = await getUserFollowingData(user, pagination_token);
+        const data = await getUserFollowingData(
+          req.body.user,
+          pagination_token
+        );
         const id =
           req.body.twitterFollowed === "official"
             ? variables.ACCOUNT_OFFICIAL
@@ -154,24 +152,23 @@ const twitterFollowed = asyncHandler(async (req, res) => {
           user.arcadePoint += 1;
 
           const updatedUser = await user.save();
-          res.json(updatedUser);
+          resp.json(updatedUser);
         } else {
           if (data.meta && data.meta.next_token) {
             pagination_token = data.meta.next_token;
             shouldRun = true;
           } else {
-            res.status(400);
-            throw new Error("Please try again! You havent followed");
+            resp.status(400);
+            throw Error("Please try again! You havent followed");
           }
         }
       } catch (error) {
-        return res.json({ error: error });
-        // res.status(400);
-        // throw new Error(error);
+        resp.status(400);
+        throw Error(error);
       }
     } while (shouldRun);
   } else {
-    res.status(404);
+    resp.status(404);
     throw new Error("User not found");
   }
 });
@@ -179,11 +176,11 @@ const twitterFollowed = asyncHandler(async (req, res) => {
 // @desc    twitter followed
 // @route   patch /api/users/twitterRetweeted
 // @access  Private
-const twitterRetweeted = asyncHandler(async (req, res) => {
+const twitterRetweeted = asyncHandler(async (req, resp) => {
   const user = await User.findById(req.user._id);
   if (user) {
     if (user.twitterRetweeted.length > 0) {
-      res.status(400);
+      resp.status(400);
       throw new Error("User already retweeted this specific tweet");
     }
 
@@ -210,26 +207,25 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
           user.arcadePoint += 1;
 
           const updatedUser = await user.save();
-          res.json(updatedUser);
+          resp.json(updatedUser);
         } else {
           if (data.meta && data.meta.next_token) {
             pagination_token = data.meta.next_token;
             shouldRun = true;
           } else {
-            res.status(400);
+            resp.status(400);
             throw new Error(
-              "Please try again! You havent retweeted this specific tweet"
+              "Please try again! You haven't retweeted this specific tweet"
             );
           }
         }
       } catch (error) {
-        return res({});
-        // res.status(400);
-        // throw new Error(error);
+        resp.status(400);
+        throw Error(error);
       }
     } while (shouldRun);
   } else {
-    res.status(404);
+    resp.status(404);
     throw new Error("User not found");
   }
 });
@@ -237,11 +233,11 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
 // @desc    twitter tweeted specific handle
 // @route   patch /api/users/twitterFollowed
 // @access  Private
-const twitterTweetedHandle = asyncHandler(async (req, res) => {
+const twitterTweetedHandle = asyncHandler(async (req, resp) => {
   const user = await User.findById(req.user._id);
   if (user) {
     if (user.twitterTweetedHandle.length > 0) {
-      res.status(400);
+      resp.status(400);
       throw new Error("User already tweeted this specific handle");
     }
 
@@ -273,26 +269,25 @@ const twitterTweetedHandle = asyncHandler(async (req, res) => {
           user.arcadePoint += 1;
 
           const updatedUser = await user.save();
-          res.json(updatedUser);
+          resp.json(updatedUser);
         } else {
           if (data.meta && data.meta.next_token) {
             pagination_token = data.meta.next_token;
             shouldRun = true;
           } else {
-            res.status(400);
-            throw new Error(
+            resp.status(400);
+            throw Error(
               "Please try again! You havent tweeted this specific handle"
             );
           }
         }
       } catch (error) {
-        return res({});
-        // res.status(400);
-        // throw new Error(error);
+        resp.status(400);
+        throw Error(error);
       }
     } while (shouldRun);
   } else {
-    res.status(404);
+    resp.status(404);
     throw new Error("User not found");
   }
 });
