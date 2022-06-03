@@ -2,7 +2,6 @@ import express from "express";
 import fetch from "node-fetch";
 import asyncHandler from "express-async-handler";
 import { variables } from "../log.js";
-import fetch from "node-fetch";
 
 const router = express.Router();
 
