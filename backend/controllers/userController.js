@@ -61,7 +61,7 @@ const patch = asyncHandler(async (req, res) => {
 // @desc    verify discord
 // @route   patch /api/users/verifyDiscord
 // @access  Private
-const verifyDiscord = asyncHandler(async (req, res) => {
+const verifyDiscord = asyncHandler(async (req, resp) => {
   const user = await User.findById(req.user._id);
   if (user) {
     // Step 1: Make a request to Discord's API to get the user's server list
@@ -71,9 +71,9 @@ const verifyDiscord = asyncHandler(async (req, res) => {
       },
     })
       .then((res) => res.json())
-      .then((res) => {
+      .then((response) => {
         // Step 2: Check if our server is in the user's server
-        const guilds = res.map((guild) => guild.id);
+        const guilds = response.map((guild) => guild.id);
 
         const SERVER = variables.server;
         const isInGuild = guilds.includes(SERVER);
@@ -83,7 +83,7 @@ const verifyDiscord = asyncHandler(async (req, res) => {
             `https://discordapp.com/api/users/@me/guilds/${SERVER}/member`,
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${req.body.token}`,
               },
             }
           )
@@ -98,24 +98,27 @@ const verifyDiscord = asyncHandler(async (req, res) => {
                 user.verifiedInDiscord = true;
                 user.arcadePoint += 1;
                 const updatedUser = await user.save();
-                res.json(updatedUser);
+                resp.status(201).resp.json(updatedUser);
               } else {
-                res.status(401);
-                throw new Error("You don't have the role!");
+                resp.status(401).json({
+                  errorMsg: "You don't have the role",
+                });
               }
             });
         } else {
           // return 401 if the user is not in the server
-          res.status(401);
-          throw new Error("You are not in the server!");
+          resp.status(401).json({
+            errorMsg: "You Are Not In the Server",
+          });
         }
       })
       .catch((error) => {
-        res.status(400);
-        throw new Error(error);
+        resp.status(400).json({
+          errorMsg: error.message,
+        });
       });
   } else {
-    res.status(404);
+    resp.status(404);
     throw new Error("User not found");
   }
 });
