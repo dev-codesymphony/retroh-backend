@@ -3,7 +3,6 @@ import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
 import { variables } from "../log.js";
 import { getUserFollowingData, getUserTweetsData } from "../utils/functions.js";
-import fetch from "node-fetch";
 
 // @desc    Get user profile
 // @route   Get /api/users/profile
