@@ -2,7 +2,7 @@
 //and keep our code sexier
 
 import module from "oauth";
-import { variables } from "../config/db.js";
+import { variables } from "../log.js";
 export default function (oauthCallback) {
   const CONSUMER_KEY = variables.CONSUMER_KEY;
   const CONSUMER_SECRET = variables.CONSUMER_SECRET;

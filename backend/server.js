@@ -1,10 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
+
 import express from "express";
 import path from "path";
 import colors from "colors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";

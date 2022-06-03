@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { variables } from "../config/db.js";
+import { variables } from "../log.js";
 const oauthCallback = variables.oauthCallback;
 import oauth from "../lib/oauth-promise.js";
 const x = oauth(oauthCallback);

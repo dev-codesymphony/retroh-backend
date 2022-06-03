@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
-import { variables } from "../config/db.js";
+import { variables } from "../log.js";
 import { getUserFollowingData, getUserTweetsData } from "../utils/functions.js";
 // @desc    Get user profile
 // @route   Get /api/users/profile
