@@ -72,6 +72,7 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
     })
       .then((res) => res.json())
       .then((response) => {
+        console.log(response);
         // Step 2: Check if our server is in the user's server
         const guilds = response.map((guild) => guild.id);
 
