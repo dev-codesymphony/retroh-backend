@@ -2,11 +2,11 @@
 //and keep our code sexier
 
 import module from "oauth";
-import environment from "../environment.js";
+import { variables } from "../server.js";
 
 export default function (oauthCallback) {
-  const CONSUMER_KEY = environment.CONSUMER_KEY;
-  const CONSUMER_SECRET = environment.CONSUMER_SECRET;
+  const CONSUMER_KEY = variables.CONSUMER_KEY;
+  const CONSUMER_SECRET = variables.CONSUMER_SECRET;
   const _oauth = new module.OAuth(
     "https://api.twitter.com/oauth/request_token",
     "https://api.twitter.com/oauth/access_token",

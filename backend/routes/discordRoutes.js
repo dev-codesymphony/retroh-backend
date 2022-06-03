@@ -1,15 +1,16 @@
 import express from "express";
 import fetch from "node-fetch";
 import asyncHandler from "express-async-handler";
+import { variables } from "../server.js";
 
 const router = express.Router();
 
-const CLIENT_ID = "975998220314476556";
-const CLIENT_SECRET = "tbOg8fGQUH5cOoXNlS0LURtCtmsuqXuW";
+const CLIENT_ID = variables.DISCORD_CLIENT_ID;
+const CLIENT_SECRET = variables.DISCORD_CLIENT_SECRET;
 
-const redirect = "http://54.176.83.139:5000/api/discord/callback";
+const redirect = variables.REDIRECT;
 
-const FRONTEND_URL = "http://54.176.83.139:8080/";
+const FRONTEND_URL = variables.oauthCallback;
 
 router.get("/login", (req, res) => {
   res.redirect(

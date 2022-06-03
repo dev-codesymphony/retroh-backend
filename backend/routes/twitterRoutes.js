@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
-import environment from "../environment.js";
-const oauthCallback = environment.oauthCallback;
+import { variables } from "../server.js";
+const oauthCallback = variables.oauthCallback;
 import oauth from "../lib/oauth-promise.js";
 const x = oauth(oauthCallback);
 const COOKIE_NAME = "oauth_token";
