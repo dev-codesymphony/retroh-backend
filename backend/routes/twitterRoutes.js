@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { variables } from "../server.js";
+import { variables } from "../config/db.js";
 const oauthCallback = variables.oauthCallback;
 import oauth from "../lib/oauth-promise.js";
 const x = oauth(oauthCallback);
@@ -17,9 +17,9 @@ router.post("/oauth/request_token", async (req, res) => {
 
     res.cookie(COOKIE_NAME, oauth_token, {
       maxAge: 15 * 60 * 1000, // 15 minutes
-//       secure: true,
-//       httpOnly: true,
-//       sameSite: true,
+      //       secure: true,
+      //       httpOnly: true,
+      //       sameSite: true,
     });
 
     tokens[oauth_token] = { oauth_token_secret };

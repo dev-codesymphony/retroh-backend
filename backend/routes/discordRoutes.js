@@ -1,8 +1,7 @@
 import express from "express";
 import fetch from "node-fetch";
 import asyncHandler from "express-async-handler";
-import { variables } from "../server.js";
-
+import { variables } from "../config/db.js";
 const router = express.Router();
 
 const CLIENT_ID = variables.DISCORD_CLIENT_ID;

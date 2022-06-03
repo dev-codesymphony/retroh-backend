@@ -1,8 +1,8 @@
 import asyncHandler from "express-async-handler";
 import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
-import { variables } from "../server.js";
-import {getUserFollowingData, getUserTweetsData} from "../utils/functions.js";
+import { variables } from "../config/db.js";
+import { getUserFollowingData, getUserTweetsData } from "../utils/functions.js";
 // @desc    Get user profile
 // @route   Get /api/users/profile
 // @access  Private
@@ -86,7 +86,7 @@ const verifyDiscord = asyncHandler(async (req, res) => {
             }
           )
             .then((res) => res.json())
-            .then((res) => {
+            .then(async (res) => {
               // Step 4: Check if the user has a role in our server
               const roles = res.roles;
               const ROLE = variables.role;
@@ -127,7 +127,6 @@ const twitterFollowed = asyncHandler(async (req, res) => {
       throw new Error("User already followed");
     }
 
-
     let pagination_token = null;
     let shouldRun;
     do {
@@ -135,11 +134,16 @@ const twitterFollowed = asyncHandler(async (req, res) => {
         shouldRun = false;
         const data = await getUserFollowingData(user, pagination_token);
         // eslint-disable-next-line
-        const isFollowing = data.data.some((user) => user.id == req.body.twitterFollowed);
+        const isFollowing = data.data.some(
+          (user) => user.id == req.body.twitterFollowed
+        );
         if (isFollowing) {
-          user.twitterFollowed = [...user.twitterFollowed, req.body.twitterFollowed];
+          user.twitterFollowed = [
+            ...user.twitterFollowed,
+            req.body.twitterFollowed,
+          ];
           user.arcadePoint += 1;
-      
+
           const updatedUser = await user.save();
           res.json(updatedUser);
         } else {
@@ -152,11 +156,10 @@ const twitterFollowed = asyncHandler(async (req, res) => {
           }
         }
       } catch (error) {
-        res.status(400)
-        throw new Error(error)
+        res.status(400);
+        throw new Error(error);
       }
     } while (shouldRun);
-
   } else {
     res.status(404);
     throw new Error("User not found");
@@ -174,7 +177,6 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
       throw new Error("User already retweeted this specific tweet");
     }
 
-
     let pagination_token = null;
     let shouldRun = false;
     do {
@@ -184,7 +186,9 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
 
         const filteredData = data.data.filter((data) => {
           return data.referenced_tweets
-            ? data.referenced_tweets.some((tweet) => tweet.id === req.body.twitterRetweeted)
+            ? data.referenced_tweets.some(
+                (tweet) => tweet.id === req.body.twitterRetweeted
+              )
             : false;
         });
 
@@ -197,7 +201,7 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
             req.body.twitterRetweeted,
           ];
           user.arcadePoint += 1;
-      
+
           const updatedUser = await user.save();
           res.json(updatedUser);
         } else {
@@ -206,16 +210,16 @@ const twitterRetweeted = asyncHandler(async (req, res) => {
             shouldRun = true;
           } else {
             res.status(400);
-            throw new Error("Please try again! You havent retweeted this specific tweet");
+            throw new Error(
+              "Please try again! You havent retweeted this specific tweet"
+            );
           }
         }
       } catch (error) {
-        res.status(400)
-        throw new Error(error)
+        res.status(400);
+        throw new Error(error);
       }
     } while (shouldRun);
-
- 
   } else {
     res.status(404);
     throw new Error("User not found");
@@ -259,7 +263,7 @@ const twitterTweetedHandle = asyncHandler(async (req, res) => {
             req.body.tweetedHandle,
           ];
           user.arcadePoint += 1;
-      
+
           const updatedUser = await user.save();
           res.json(updatedUser);
         } else {
@@ -268,12 +272,14 @@ const twitterTweetedHandle = asyncHandler(async (req, res) => {
             shouldRun = true;
           } else {
             res.status(400);
-            throw new Error("Please try again! You havent tweeted this specific handle");
+            throw new Error(
+              "Please try again! You havent tweeted this specific handle"
+            );
           }
         }
       } catch (error) {
-        res.status(400)
-        throw new Error(error)
+        res.status(400);
+        throw new Error(error);
       }
     } while (shouldRun);
   } else {
