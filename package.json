@@ -24,7 +24,8 @@
     "mongoose": "^6.0.12",
     "morgan": "^1.10.0",
     "node-fetch": "^3.2.4",
-    "oauth": "^0.9.15"
+    "oauth": "^0.9.15",
+    "rand-token": "^1.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.14"

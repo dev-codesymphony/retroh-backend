@@ -4,7 +4,7 @@ import User from "../models/userModel.js";
 import { variables } from "../log.js";
 import { getUserFollowingData, getUserTweetsData } from "../utils/functions.js";
 import fetch from "node-fetch";
-
+import TokenString from "../models/tokenStringModel.js";
 // @desc    Get user profile
 // @route   Get /api/users/profile
 // @access  Private
@@ -52,6 +52,66 @@ const patch = asyncHandler(async (req, res) => {
 
     const updatedUser = await user.save();
     res.json(updatedUser);
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+// @desc    consume a point and generate a token string
+// @route   post /api/users/generateTokenString
+// @access  Private
+const generateTokenString = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    user.arcadePoint -= 1;
+    const updatedUser = await user.save();
+
+    const tokenString = await new TokenString().save();
+    res.json(tokenString);
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+// @desc    directly expire token string
+// @route   post /api/users/expireTokenString
+// @access  Private
+const expireTokenString = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const tokenString = await TokenString.findOne({
+      tokenString: req.body.tokenString,
+    });
+    if (tokenString) {
+      tokenString.remove();
+      res.json(tokenString);
+    } else {
+      res.status(404);
+      throw new Error("Token string invalid or missing");
+    }
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+// @desc    check token string is valid or not
+// @route   post /api/users/tokenStringValid
+// @access  Private
+const tokenStringValid = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    const tokenString = await TokenString.findOne({
+      tokenString: req.body.tokenString,
+    });
+    if (tokenString) {
+      res.json(tokenString);
+    } else {
+      res.status(404);
+      throw new Error("Token string expired or invalid");
+    }
   } else {
     res.status(404);
     throw new Error("User not found");
@@ -317,4 +377,7 @@ export {
   twitterFollowed,
   twitterRetweeted,
   twitterTweetedHandle,
+  generateTokenString,
+  expireTokenString,
+  tokenStringValid,
 };
