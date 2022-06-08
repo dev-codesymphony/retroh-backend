@@ -15,4 +15,5 @@ export let variables = {
   TWEET: process.env.TWEET,
   ACCOUNT_OFFICIAL: process.env.ACCOUNT_OFFICIAL,
   ACCOUNT_FOUNDER: process.env.ACCOUNT_FOUNDER,
+  EXPIRES: process.env.EXPIRES,
 };

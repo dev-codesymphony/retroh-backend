@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import randtoken from "rand-token";
-
+import { variables } from "../log";
 const tokenStringSchema = mongoose.Schema({
   tokenString: {
     type: String,
@@ -8,7 +8,7 @@ const tokenStringSchema = mongoose.Schema({
       return randtoken.generate(32);
     },
   },
-  createdAt: { type: Date, expires: 3600, default: Date.now },
+  createdAt: { type: Date, expires: variables.EXPIRES, default: Date.now },
 });
 
 const TokenString = mongoose.model("TokenString", tokenStringSchema);
