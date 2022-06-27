@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import randtoken from "rand-token";
-import { variables } from "../log";
+import { variables } from "../log.js";
 const tokenStringSchema = mongoose.Schema({
   tokenString: {
     type: String,
