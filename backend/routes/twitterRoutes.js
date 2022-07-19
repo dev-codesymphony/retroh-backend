@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import { variables } from "../log.js";
-const oauthCallback = variables.oauthCallback;
+const oauthCallback = variables.oauthCallbackTwitterLogin;
 import oauth from "../lib/oauth-promise.js";
 const x = oauth(oauthCallback);
 const COOKIE_NAME = "oauth_token";

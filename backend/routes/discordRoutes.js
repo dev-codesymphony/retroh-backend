@@ -50,7 +50,7 @@ router.get(
     );
     const userInfo = await fetchDiscordUserInfo.json();
 
-    res.redirect(`${FRONTEND_URL}/?token=${json.access_token}`);
+    res.redirect(`${FRONTEND_URL}/join-the-hunt?token=${json.access_token}`);
 
     console.log(userInfo);
   })

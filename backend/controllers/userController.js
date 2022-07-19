@@ -49,6 +49,9 @@ const patch = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (user) {
     user.username = req.body.username || user.username;
+    if (req.body.revealedCode === true) {
+      user.revealedCode = req.body.revealedCode;
+    }
 
     const updatedUser = await user.save();
     res.json(updatedUser);
@@ -124,6 +127,9 @@ const tokenStringValid = asyncHandler(async (req, res) => {
 const verifyDiscord = asyncHandler(async (req, resp) => {
   const user = await User.findById(req.user._id);
   if (user) {
+    if (user.verifiedInDiscord) {
+      return resp.status(400).json({ message: "User Already Verified!" });
+    }
     // Step 1: Make a request to Discord's API to get the user's server list
     fetch(`https://discordapp.com/api/users/@me/guilds`, {
       headers: {
@@ -132,11 +138,18 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
     })
       .then((res) => res.json())
       .then((response) => {
-        // Step 2: Check if our server is in the user's server
-        const guilds = response.map((guild) => guild.id);
+        console.log(response);
+        let guilds;
+        if (response.length > 0) {
+          // Step 2: Check if our server is in the user's server
+          guilds = response.map((guild) => guild.id);
+        }
 
         const SERVER = variables.server;
-        const isInGuild = guilds.includes(SERVER);
+        let isInGuild;
+        if (guilds) {
+          isInGuild = guilds.includes(SERVER);
+        }
         if (isInGuild) {
           // Step 3: If we are in the server, get the user's info
           fetch(
@@ -152,26 +165,27 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
               // Step 4: Check if the user has a role in our server
               const roles = res.roles;
               const ROLE = variables.role;
-              const hasRole = roles.includes(ROLE);
+              let hasRole;
+              if (roles) {
+                hasRole = roles.includes(ROLE);
+              }
               if (hasRole) {
                 // Step 5: If the user has the role, update in the database
                 user.verifiedInDiscord = true;
                 user.arcadePoint += 1;
                 const updatedUser = await user.save();
-                resp.status(201).resp.json(updatedUser);
+                resp.status(201).json(updatedUser);
               } else {
-                resp.status(400);
-                throw Error("Dont have role");
+                resp.json({ message: "role not assigned" });
               }
             });
         } else {
-          resp.status(400);
-          throw Error("Not In Server");
+          resp.json({ message: "not found in server" });
         }
       })
       .catch((error) => {
         resp.status(400);
-        throw Error(error.message);
+        throw new Error(error.message);
       });
   } else {
     resp.status(404);
@@ -186,7 +200,7 @@ const twitterFollowed = asyncHandler(async (req, resp) => {
   if (user) {
     if (user.twitterFollowed.includes(req.body.twitterFollowed)) {
       resp.status(400);
-      throw Error("User already followed");
+      resp.json({ message: "already followed" });
     }
 
     let pagination_token = null;
@@ -219,12 +233,15 @@ const twitterFollowed = asyncHandler(async (req, resp) => {
             shouldRun = true;
           } else {
             resp.status(400);
-            throw Error("Please try again! You havent followed");
+            resp.json({
+              message: "Please try again! You havent Followed this",
+            });
           }
         }
       } catch (error) {
+        console.log(error);
         resp.status(400);
-        throw Error(error);
+        throw new Error(error);
       }
     } while (shouldRun);
   } else {
@@ -241,7 +258,7 @@ const twitterRetweeted = asyncHandler(async (req, resp) => {
   if (user) {
     if (user.twitterRetweeted.length > 0) {
       resp.status(400);
-      throw new Error("User already retweeted this specific tweet");
+      resp.json({ message: "User already retweeted this" });
     }
 
     let pagination_token = null;
@@ -250,18 +267,18 @@ const twitterRetweeted = asyncHandler(async (req, resp) => {
       try {
         shouldRun = false;
         const data = await getUserTweetsData(req.body.user, pagination_token);
+        let filteredData;
+        if (data && data.data && data.data.length > 0) {
+          filteredData = data.data.filter((data) => {
+            return data.referenced_tweets
+              ? data.referenced_tweets.some(
+                  (tweet) => tweet.id === variables.TWEET
+                )
+              : false;
+          });
+        }
 
-        const filteredData = data.data.filter((data) => {
-          return data.referenced_tweets
-            ? data.referenced_tweets.some(
-                (tweet) => tweet.id === variables.TWEET
-              )
-            : false;
-        });
-
-        console.log("filteredData", filteredData);
-
-        const hasRetweetedTweet = filteredData.length > 0;
+        const hasRetweetedTweet = filteredData && filteredData.length > 0;
         if (hasRetweetedTweet) {
           user.twitterRetweeted = [...user.twitterRetweeted, variables.TWEET];
           user.arcadePoint += 1;
@@ -274,14 +291,14 @@ const twitterRetweeted = asyncHandler(async (req, resp) => {
             shouldRun = true;
           } else {
             resp.status(400);
-            throw new Error(
-              "Please try again! You haven't retweeted this specific tweet"
-            );
+            resp.json({
+              message: "Please try again! You havent retweeted this",
+            });
           }
         }
       } catch (error) {
         resp.status(400);
-        throw Error(error);
+        throw new Error(error);
       }
     } while (shouldRun);
   } else {
@@ -298,7 +315,7 @@ const twitterTweetedHandle = asyncHandler(async (req, resp) => {
   if (user) {
     if (user.twitterTweetedHandle.length > 0) {
       resp.status(400);
-      throw new Error("User already tweeted this specific handle");
+      resp.json({ message: "User already tweeted this" });
     }
 
     let pagination_token = null;
@@ -336,14 +353,14 @@ const twitterTweetedHandle = asyncHandler(async (req, resp) => {
             shouldRun = true;
           } else {
             resp.status(400);
-            throw Error(
-              "Please try again! You havent tweeted this specific handle"
-            );
+            resp.json({
+              message: "Please try again! You haven't tweeted this",
+            });
           }
         }
       } catch (error) {
         resp.status(400);
-        throw Error(error);
+        throw new Error(error);
       }
     } while (shouldRun);
   } else {

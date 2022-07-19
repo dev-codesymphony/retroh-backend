@@ -3,6 +3,7 @@ dotenv.config();
 
 export let variables = {
   oauthCallback: process.env.oauthCallback,
+  oauthCallbackTwitterLogin: process.env.oauthCallbackTwitterLogin,
   CONSUMER_SECRET: process.env.CONSUMER_SECRET,
   CONSUMER_KEY: process.env.CONSUMER_KEY,
   REDIRECT: process.env.REDIRECT,
