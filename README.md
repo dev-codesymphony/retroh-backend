@@ -22,6 +22,8 @@ This project uses the following environment variables:
 |TWEET | which tweet id you want user to retweet | 1048541375577423873|
 |ACCOUNT_OFFICIAL | which account you want user to follow | 44196397|
 |ACCOUNT_FOUNDER | which account you want user to follow | 184890483|
+|EXPIRES | what time to expire token | 3600|
+|oauthCallbackTwitterLogin | where to redirect after twitter login | http://localhost:8080/task|
 
 
 # Pre-requisites
