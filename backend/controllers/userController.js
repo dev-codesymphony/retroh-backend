@@ -200,7 +200,7 @@ const twitterFollowed = asyncHandler(async (req, resp) => {
   if (user) {
     if (user.twitterFollowed.includes(req.body.twitterFollowed)) {
       resp.status(400);
-      resp.json({ message: "already followed" });
+      throw new Error("already followed");
     }
 
     let pagination_token = null;
@@ -233,9 +233,7 @@ const twitterFollowed = asyncHandler(async (req, resp) => {
             shouldRun = true;
           } else {
             resp.status(400);
-            resp.json({
-              message: "Please try again! You havent Followed this",
-            });
+            throw new Error("not following");
           }
         }
       } catch (error) {
@@ -258,7 +256,7 @@ const twitterRetweeted = asyncHandler(async (req, resp) => {
   if (user) {
     if (user.twitterRetweeted.length > 0) {
       resp.status(400);
-      resp.json({ message: "User already retweeted this" });
+      throw new Error("already retweeted");
     }
 
     let pagination_token = null;
@@ -291,9 +289,7 @@ const twitterRetweeted = asyncHandler(async (req, resp) => {
             shouldRun = true;
           } else {
             resp.status(400);
-            resp.json({
-              message: "Please try again! You havent retweeted this",
-            });
+            throw new Error("havent retweeted");
           }
         }
       } catch (error) {
@@ -315,7 +311,7 @@ const twitterTweetedHandle = asyncHandler(async (req, resp) => {
   if (user) {
     if (user.twitterTweetedHandle.length > 0) {
       resp.status(400);
-      resp.json({ message: "User already tweeted this" });
+      throw new Error("already tweeted");
     }
 
     let pagination_token = null;
@@ -353,9 +349,7 @@ const twitterTweetedHandle = asyncHandler(async (req, resp) => {
             shouldRun = true;
           } else {
             resp.status(400);
-            resp.json({
-              message: "Please try again! You haven't tweeted this",
-            });
+            throw new Error("havent tweeted");
           }
         }
       } catch (error) {
