@@ -8,7 +8,12 @@ export const Discord = ({ auth, onLoggedOut, called }) => {
   });
 
   const verifydiscord = () => {
-    window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/discord/login`;
+    if (document.getElementById("discordErrTxt").classList.contains("error")) {
+      document.getElementById("discordErrTxt").classList.remove("error");
+      window.open(process.env.REACT_APP_DISCORD, "_blank").focus();
+    } else {
+      window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/discord/login`;
+    }
   };
 
   useEffect(() => {

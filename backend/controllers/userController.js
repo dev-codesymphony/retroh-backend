@@ -39,7 +39,7 @@ const create = asyncHandler(async (req, res) => {
     }
   }
   // if user is created successfully
-  res.status(201).res.json(createdUser);
+  res.status(201).json(createdUser);
 });
 
 // @desc    Update user profile
@@ -180,7 +180,7 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
               }
             });
         } else {
-          resp.json({ message: "not found in server" });
+          resp.json({ message: "not in server" });
         }
       })
       .catch((error) => {
@@ -235,7 +235,13 @@ const twitterFollowed = asyncHandler(async (req, resp) => {
             shouldRun = true;
           } else {
             resp.status(400);
-            throw new Error("not following");
+            throw new Error(
+              `not following - ${
+                req.body.twitterFollowed === "official"
+                  ? variables.ACCOUNT_OFFICIAL_NAME
+                  : variables.ACCOUNT_FOUNDER_NAME
+              }`
+            );
           }
         }
       } catch (error) {

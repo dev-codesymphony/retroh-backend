@@ -42,18 +42,26 @@ export const Login = ({ onLoggedIn }) => {
       .substring(0, length);
   }
 
-  const handleSignup = (publicAddress) => {
-    // console.log(generateUID(22)); // "yFg3Upv2cE9cKOXd7hHwWp"
-    // console.log(generateUID(5)); // "YQGzP"
+  const handleSignup = async (publicAddress) => {
     const username = generateUID(5);
+    let url = "/api/users?referredby=";
+    if (referredby) {
+      url = `/api/users?referredby=${referredby}`;
+    }
 
-    fetch(`/api/users?referredby=${referredby}`, {
-      body: JSON.stringify({ publicAddress, username }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const body = JSON.stringify({ publicAddress, username });
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const res = await fetch(`${url}`, {
+      body: body,
+      headers: headers,
       method: "POST",
-    }).then((response) => response.json());
+    });
+
+    const resJson = await res.json();
+
+    return resJson;
   };
   const handleClick = async () => {
     // Check if MetaMask is installed
@@ -85,24 +93,23 @@ export const Login = ({ onLoggedIn }) => {
     const publicAddress = await coinbase.toLowerCase();
     setLoading(true);
 
-    publicAddress &&
-      // Look if user with current publicAddress is already present on backend
-      fetch(`/api/users?publicAddress=${publicAddress}`)
-        .then((response) => response.json())
-        // If yes, retrieve it. If no, create it.
-        .then((users) =>
-          users.length ? users[0] : handleSignup(publicAddress)
-        )
-        // Popup MetaMask confirmation modal to sign message
-        .then(handleSignMessage)
-        // Send signature to backend on the /auth route
-        .then(handleAuthenticate)
-        // Pass accessToken back to parent component (to save it in localStorage)
-        .then(onLoggedIn)
-        .catch((err) => {
-          // window.alert(err);
-          setLoading(false);
-        });
+    // Look if user with current publicAddress is already present on backend
+    fetch(`/api/users?publicAddress=${publicAddress}`)
+      .then((response) => response.json())
+      // If yes, retrieve it. If no, create it.
+      .then(async (users) =>
+        users.length ? users[0] : await handleSignup(publicAddress)
+      )
+      // Popup MetaMask confirmation modal to sign message
+      .then(handleSignMessage)
+      // Send signature to backend on the /auth route
+      .then(handleAuthenticate)
+      // Pass accessToken back to parent component (to save it in localStorage)
+      .then(onLoggedIn)
+      .catch((err) => {
+        // window.alert(err);
+        setLoading(false);
+      });
   };
 
   return (

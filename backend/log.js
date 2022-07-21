@@ -15,6 +15,8 @@ export let variables = {
   HANDLE: process.env.HANDLE,
   TWEET: process.env.TWEET,
   ACCOUNT_OFFICIAL: process.env.ACCOUNT_OFFICIAL,
+  ACCOUNT_OFFICIAL_NAME: process.env.ACCOUNT_OFFICIAL_NAME,
+  ACCOUNT_FOUNDER_NAME: process.env.ACCOUNT_FOUNDER_NAME,
   ACCOUNT_FOUNDER: process.env.ACCOUNT_FOUNDER,
   EXPIRES: process.env.EXPIRES,
 };

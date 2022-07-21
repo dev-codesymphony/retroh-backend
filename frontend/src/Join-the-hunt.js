@@ -67,6 +67,9 @@ const Join_the_hunt = () => {
             setCalled(true);
             document.getElementById("newBtn").click();
           } else {
+            if (res.message.includes("server")) {
+              document.getElementById("discordErrTxt").classList.add("error");
+            }
             document.getElementById("discordErrTxt").innerHTML = res.message;
             setCalled(true);
             document.getElementById("newBtn").click();

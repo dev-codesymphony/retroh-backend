@@ -105,6 +105,13 @@ export const Profile = ({ auth, onLoggedOut }) => {
           ...errors,
           myBtn1: newres.message,
         });
+        window
+          .open(
+            "https://twitter.com/" +
+              process.env.REACT_APP_ACCOUNT_OFFICIAL_NAME,
+            "_blank"
+          )
+          .focus();
       }
       if (response.status == 200) {
         setErrors({
@@ -134,6 +141,12 @@ export const Profile = ({ auth, onLoggedOut }) => {
           ...errors,
           myBtn2: newres.message,
         });
+        window
+          .open(
+            "https://twitter.com/" + process.env.REACT_APP_ACCOUNT_FOUNDER_NAME,
+            "_blank"
+          )
+          .focus();
       }
       if (response.status == 200) {
         getProfile();
@@ -162,6 +175,7 @@ export const Profile = ({ auth, onLoggedOut }) => {
           ...errors,
           myBtn3: newres.message,
         });
+        window.open(process.env.REACT_APP_TWEET, "_blank").focus();
       }
       if (response.status == 200) {
         getProfile();
@@ -190,6 +204,9 @@ export const Profile = ({ auth, onLoggedOut }) => {
           ...errors,
           myBtn4: newres.message,
         });
+        window
+          .open("https://twitter.com/" + process.env.REACT_APP_HANDLE, "_blank")
+          .focus();
       }
 
       if (response.status == 200) {
