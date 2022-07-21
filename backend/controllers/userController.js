@@ -195,6 +195,8 @@ const verifyDiscord = asyncHandler(async (req, resp) => {
 // @desc    twitter followed
 // @route   patch /api/users/twitterFollowed
 // @access  Private
+
+// add comment
 const twitterFollowed = asyncHandler(async (req, resp) => {
   const user = await User.findById(req.user._id);
   if (user) {
