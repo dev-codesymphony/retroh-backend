@@ -44,7 +44,7 @@ const Join_the_hunt = () => {
       $(".join-the-hunt-into").addClass("d-none");
       $("#join-the-hunt").addClass("bg_gif");
       $("#join-box").addClass("animate__fadeIn").removeClass("d-none");
-    }, 2000);
+    }, 0);
 
     const token = qs("token");
 
@@ -62,6 +62,7 @@ const Join_the_hunt = () => {
         .then((res) => {
           return res.json();
         })
+
         .then((res) => {
           if (res.publicAddress) {
             setCalled(true);
@@ -110,7 +111,6 @@ const Join_the_hunt = () => {
         width={1920}
         height={1080}
       />
-
       <section id="join-the-hunt" className="sec-pad-lg">
         <div className="container">
           <div className="row align-items-center vh-100">

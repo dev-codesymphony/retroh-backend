@@ -60,8 +60,8 @@ export const Login = ({ onLoggedIn }) => {
     });
 
     const resJson = await res.json();
-
-    return resJson;
+    document.getElementById("wallet_connection").click();
+    // return resJson;
   };
   const handleClick = async () => {
     // Check if MetaMask is installed
